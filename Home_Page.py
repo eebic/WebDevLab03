@@ -23,10 +23,10 @@ st.subheader("Team Member 1: Kaiya Evans, Team Member 2: Jenna Tran")
 st.write("""
 Welcome to our Streamlit Web Development Lab03 app! You can navigate between the pages using the sidebar to the left. The following pages are:
 
-1. Home Page
-2.
-3.
-4.
+1. Home Page: Introduces the project, its purpose, and provides navigation to the other pages.
+2. Stock Market Dashboard: Displays real-time market data and interactive visualizations of selected stocks.
+3. Stock Analysis: Analyzes historical performance metrics and trends to evaluate investment potential.
+4. Personal Stock Advisory: Offers personalized insights and portfolio suggestions based on user preferences and data.
 
 """)
 
