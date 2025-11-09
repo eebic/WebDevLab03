@@ -8,7 +8,7 @@ st.title("📈 Stock Market Dashboard")
 st.write(
     """
 This dashboard shows real stock market data using the **Alpha Vantage API**.  
-Enter a stock ticker and choose how many recent 60-minute points you want to see.
+Enter a stock ticker and choose how many recent 60-minute candlesticks/points you want to see.
 You can view either the stock’s price trend or its trading volume.
     """
 )
@@ -49,7 +49,8 @@ if "Time Series (60min)" in data:
         .encode(
             x=alt.X("index:T", title="Time"),
             y=alt.Y("close:Q", title="Closing Price ($)"),
-            tooltip=["index:T", "open", "high", "low", "close"]
+            tooltip=["index:T", "open", "high", "low", "close"] 
+        #when you hover over a  point on the graph, it'll show open, high, low, close of the candlestick
         )
         .properties(height=400, title=f"{symbol} Price Action (Last {num_points} Candlesticks)")
         .interactive()
