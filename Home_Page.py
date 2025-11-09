@@ -3,7 +3,7 @@
 import streamlit as st
 
 # Title of App
-st.title("Web Development Lab03")
+st.title("Web Development Lab03 - Stock Data Explorer")
 
 st.image("Images/intro_pic.jpg", use_container_width=True)
 
