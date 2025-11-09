@@ -15,6 +15,7 @@ You can view either the stock’s price trend or its trading volume.
 
 st.markdown("---")
 
+#User inputs
 ticker = st.text_input("Enter a stock symbol (ex. AAPL, TSLA, MSFT)", "AAPL").upper()
 num_points = st.slider("Number of recent 60-minute points", min_value = 10, max_value = 100, value = 40, help = "Each point represents one hour of trading data.")
 
