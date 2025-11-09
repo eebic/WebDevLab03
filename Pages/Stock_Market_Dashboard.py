@@ -7,10 +7,14 @@ st.title("📈 Stock Market Dashboard")
 
 st.write(
     """
-Use this dashboard to explore recent **daily stock data** from a public
-stock market API (Alpha Vantage). Enter a ticker symbol, choose how many days of history
-you want, and select which metric to focus on.
+This dashboard shows real stock market data using the **Alpha Vantage API**.  
+Enter a stock ticker and choose how many recent 60-minute points you want to see.
+You can view either the stock’s price trend or its trading volume.
     """
 )
 
 st.markdown("---")
+
+ticker = st.text_input("Enter a stock symbol (ex. AAPL, TSLA, MSFT)", "AAPL").upper()
+num_points = st.slider("Number of recent 60-minute points", min_value = 10, max_value = 100, value = 40, help = "Each point represents one hour of trading data.")
+
