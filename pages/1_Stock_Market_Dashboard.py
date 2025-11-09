@@ -26,7 +26,7 @@ interval = "60min"
 url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}"
 response = requests.get(url)
 data = response.json()
-#query? string helps tell the API exactly what data you want
+#Note: .query? helps tell the API exactly what data you want
 # separate each parameter with &. Each parameter will have a key and a value
 
 #3 required parameters for Stock Market API:
@@ -57,9 +57,10 @@ if "Time Series (60min)" in data:
 
     st.altair_chart(line, use_container_width=True)
 
-    #Display data
+    #Displays data
     with st.expander("View Data"):
         st.dataframe(df)
 
 else:
     st.error("⚠️ Could not fetch data. Try again in a minute or check your API key (rate limit = 5 calls/min).")
+    # Our API is very slow, so this shows up kinda frequently. Sorry lol
