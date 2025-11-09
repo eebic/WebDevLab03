@@ -5,7 +5,7 @@ import streamlit as st
 # Title of App
 st.title("Web Development Lab03")
 
-st.image("Images/intro_pic.jpeg", use_container_width=True)
+st.image("Images/intro_pic.jpg", use_container_width=True)
 
 # Assignment Data 
 # TODO: Fill out your team number, section, and team members
