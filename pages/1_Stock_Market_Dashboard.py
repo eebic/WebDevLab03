@@ -33,3 +33,33 @@ data = response.json()
     #function(type of data,TIME_SEIRES_INTRADAY)
     #symbol
     #interval
+
+if "Time Series (60min)" in data:
+    ts = data["Time Series (60min)"]
+    df = pd.DataFrame(ts).T
+    df.columns = ["open", "high", "low", "close", "volume"]
+    df = df.astype(float)
+    df.index = pd.to_datetime(df.index)
+    df = df.sort_index().tail(num_points)
+
+    #Line chart
+    line = (
+        alt.Chart(df.reset_index())
+        .mark_line(color="black")
+        .encode(
+            x=alt.X("index:T", title="Time"),
+            y=alt.Y("close:Q", title="Closing Price ($)"),
+            tooltip=["index:T", "open", "high", "low", "close"]
+        )
+        .properties(height=400, title=f"{symbol} Price Action (Last {num_points} Candlesticks)")
+        .interactive()
+    )
+
+    st.altair_chart(line, use_container_width=True)
+
+    #Display data
+    with st.expander("View Data"):
+        st.dataframe(df)
+
+else:
+    st.error("⚠️ Could not fetch data. Try again in a minute or check your API key (rate limit = 5 calls/min).")
