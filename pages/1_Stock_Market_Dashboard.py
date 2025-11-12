@@ -19,7 +19,7 @@ st.markdown("---")
 symbol = st.text_input("Enter a stock symbol (ex. AAPL, TSLA, MSFT)", "AAPL").upper()
 num_points = st.slider("Number of recent 60-minute points", min_value = 10, max_value = 80, value = 24, help = "Each point represents one hour of trading data.")
 
-api_key = "ATBPU1SAP8PL9AN6"
+api_key = "2GLDYP292HNQFQUP"
 function = "TIME_SERIES_INTRADAY"
 interval = "60min"
     
