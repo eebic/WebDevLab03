@@ -11,23 +11,24 @@ st.set_page_config(
 
 # header section
 with st.container():
-    left_col, right_col = st.columns([3, 2])
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    with left_col:
-        st.title("Web Development Lab03")
-        st.header("💸 Money Moves: Stock Data Explorer")
+    col1, col2, col3 = st.columns([1, 2, 1])
 
-        st.subheader("CS 1301 • Team 15 • Section D")
-        st.write(
-            """
-            **Team Members**  
-            • Kaiya Evans  
-            • Jenna Tran  
-            """
-        )
-
-    with right_col:
+    with col2:
         st.image("Images/intro_pic.jpg", use_container_width=True)
+
+        st.markdown(
+            """
+            <div style="text-align: center; margin-top: 1rem;">
+                <h1>Money Moves</h1>
+                <h4>Stock Data Explorer</h4>
+                <p>CS 1301 • Team 15 • Section D</p>
+                <p><b>Team Members:</b> Kaiya Evans & Jenna Tran</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 st.markdown("---")
 
@@ -44,7 +45,7 @@ with st.container():
 
 st.markdown("")
 
-# over of pages section
+# overview of pages section
 with st.container():
     st.subheader("App Pages Overview")
 
