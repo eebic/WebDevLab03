@@ -17,7 +17,10 @@ with st.container():
         st.image("Images/intro_pic.jpg", use_container_width=True)
 
     with right:
-        st.title("MONEY MOVES")
+        st.markdown(
+            "<h1 style='color:#FF0000;'>MONEY MOVES</h1>",
+            unsafe_allow_html=True
+        )
         st.subheader("Stock Data Explorer")
         st.write("**CS 1301 — Team 15, Section D**")
         st.write("Team Members: **Kaiya Evans** & **Jenna Tran**")
