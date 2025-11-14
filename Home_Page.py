@@ -4,7 +4,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="MONEY MOVES",
+    page_title="MONEY MOVES: Stock Data Explorer",
     page_icon="💸",
     layout="wide" 
 )
@@ -17,7 +17,7 @@ with st.container():
         st.image("Images/intro_pic.jpg", use_container_width=True)
 
     with right:
-        st.title("MONEY MOVES")
+        st.title("<h3><u>MONEY MOVES</u></h3>", unsafe_allow_html=True)
         st.subheader("Stock Data Explorer")
         st.write("**CS 1301 — Team 15, Section D**")
         st.write("Team Members: **Kaiya Evans** & **Jenna Tran**")
