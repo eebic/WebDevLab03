@@ -11,7 +11,7 @@ st.set_page_config(
 
 # header section
 with st.container():
-    left_pad, left, middle_pad, right, right_pad = st.columns([0.3, 1, 0.6, 1, 0.3])
+    left, spacer, right = st.columns([1, 0.3, 1])
 
     with left:
         st.image("Images/intro_pic.jpg", use_container_width=True)
