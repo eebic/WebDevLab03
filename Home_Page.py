@@ -1,20 +1,20 @@
 # https://webdevlab03-team15.streamlit.app/
 # API Key (Alpha Vantage): 2GLDYP292HNQFQUP
 
-import streamlit as st
+# import streamlit as st
 
-# Title of App
-st.title("Web Development Lab03")
-st.header("Money Moves: Stock Data Explorer")
+# # Title of App
+# st.title("Web Development Lab03")
+# st.header("Money Moves: Stock Data Explorer")
 
-st.image("Images/intro_pic.jpg", use_container_width=True)
+# st.image("Images/intro_pic.jpg", use_container_width=True)
 
-# Assignment Data 
-# TODO: Fill out your team number, section, and team members
+# # Assignment Data 
+# # TODO: Fill out your team number, section, and team members
 
-st.header("CS 1301")
-st.subheader("Team 15, Web Development - Section D")
-st.subheader("Team Member 1: Kaiya Evans, Team Member 2: Jenna Tran")
+# st.header("CS 1301")
+# st.subheader("Team 15, Web Development - Section D")
+# st.subheader("Team Member 1: Kaiya Evans, Team Member 2: Jenna Tran")
 
 
 # Introduction
@@ -24,13 +24,83 @@ st.subheader("Team Member 1: Kaiya Evans, Team Member 2: Jenna Tran")
 #       3. **Page Name**: Description
 #       4. **Page Name**: Description
 
-st.write("""
-Welcome to our Streamlit Web Development Lab03 app! You can navigate between the pages using the sidebar to the left. The following pages are:
+# st.write("""
+# Welcome to our Streamlit Web Development Lab03 app! You can navigate between the pages using the sidebar to the left. The following pages are:
 
-1. Home Page: Introduces the project, its purpose, and provides navigation to the other pages.
-2. Stock Market Dashboard: Displays real-time market data and interactive visualizations of selected stocks.
-3. Stock Analysis: Analyzes historical performance metrics and trends to evaluate investment potential.
-4. Personal Stock Advisory: Offers personalized insights and portfolio suggestions based on user preferences and data.
+# 1. Home Page: Introduces the project, its purpose, and provides navigation to the other pages.
+# 2. Stock Market Dashboard: Displays real-time market data and interactive visualizations of selected stocks.
+# 3. Stock Analysis: Analyzes historical performance metrics and trends to evaluate investment potential.
+# 4. Personal Stock Advisory: Offers personalized insights and portfolio suggestions based on user preferences and data.
 
-""")
+# """)
 
+import streamlit as st
+
+st.set_page_config(
+    page_title="Money Moves: Stock Data Explorer",
+    page_icon="💸",
+    layout="wide"
+)
+
+# Header part
+with st.container():
+    left_col, right_col = st.columns([3, 2])
+
+    with left_col:
+        st.title("Web Development Lab03")
+        st.header("💸 Money Moves: Stock Data Explorer")
+
+        st.subheader("CS 1301 • Team 15 • Section D")
+        st.write(
+            """
+            **Team Members**  
+            • Kaiya Evans  
+            • Jenna Tran  
+            """
+        )
+
+    with right_col:
+        st.image("Images/intro_pic.jpg", use_container_width=True)
+
+st.markdown("---")
+
+# intro
+with st.container():
+    st.subheader("Welcome! 👋")
+    st.write(
+        """
+        Welcome to our Streamlit Web Development Lab03 app!  
+        Use the sidebar on the left to navigate between pages and explore real stock data,
+        analysis tools, and personalized insights.
+        """
+    )
+
+st.markdown("")
+
+# pages overview part
+with st.container():
+    st.subheader("App Pages Overview")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown(
+            """
+            ### 1️⃣ Home Page  
+            Introduces the project, its purpose, and how to navigate the app.
+            
+            ### 2️⃣ Stock Market Dashboard  
+            Displays real-time market data and interactive visualizations  
+            of selected stocks.
+            """
+        )
+
+    with col2:
+        st.markdown(
+            """
+            ### 3️⃣ Stock Analysis  
+            Analyzes historical performance metrics and trends to evaluate  
+            investment potential.
+            
+            ### 4️⃣ Personal Stock Advisory  
+            Offers personalized insights and portfolio suggestions based  
