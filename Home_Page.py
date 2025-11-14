@@ -4,7 +4,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Money Moves: Stock Data Explorer",
+    page_title="MONEY MOVES: Stock Data Explorer",
     page_icon="💸",
     layout="wide" 
 )
