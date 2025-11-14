@@ -6,10 +6,10 @@ import streamlit as st
 st.set_page_config(
     page_title="Money Moves: Stock Data Explorer",
     page_icon="💸",
-    layout="wide"
+    layout="wide" 
 )
 
-# Header part
+# header section
 with st.container():
     left_col, right_col = st.columns([3, 2])
 
@@ -31,7 +31,7 @@ with st.container():
 
 st.markdown("---")
 
-# intro
+# introduction section
 with st.container():
     st.subheader("Welcome! 👋")
     st.write(
@@ -44,7 +44,7 @@ with st.container():
 
 st.markdown("")
 
-# pages overview part
+# over of pages section
 with st.container():
     st.subheader("App Pages Overview")
 
@@ -71,3 +71,8 @@ with st.container():
             
             ### 4️⃣ Personal Stock Advisory  
             Offers personalized insights and portfolio suggestions based  
+            on user preferences and data.
+            """
+        )
+
+st.markmarkdown = ("") 
