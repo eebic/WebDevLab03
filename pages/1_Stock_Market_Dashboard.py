@@ -29,6 +29,12 @@ api_key = "2GLDYP292HNQFQUP"
 function = "TIME_SERIES_INTRADAY"
 interval = "60min"
 
+# simple cache so we don't spam the API with the same request over and over
+@st.cache_data(ttl=300)  # cache for 5 minutes, 300 seconds
+def fetch_data(url):
+    response = requests.get(url)
+    return response.json()
+
 # button-only fetch to not overwork the API and cause issues/run errors
 clicked = st.button("Load data")
 
@@ -37,8 +43,10 @@ st.caption("🔄 After changing the inputs above, click **Load data** again to r
 
 if clicked:
     url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}"
-    response = requests.get(url)
-    data = response.json()
+
+    # use cached fetch instead of calling the API directly every time
+    data = fetch_data(url)
+
     # Note: .query? helps tell the API exactly what data you want
     # separate each parameter with &. Each parameter will have a key and a value
 
@@ -73,7 +81,7 @@ if clicked:
 
         st.altair_chart(line, use_container_width=True)
 
-        #shows DataFrame
+        #shows dataFrame
         with st.expander("View Data"):
             st.dataframe(df)
 
