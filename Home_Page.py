@@ -17,7 +17,7 @@ with st.container():
         st.image("Images/intro_pic.jpg", use_container_width=True)
 
     with right:
-        st.title("<h3><u>MONEY MOVES</u></h3>", unsafe_allow_html=True)
+        st.title("MONEY MOVES")
         st.subheader("Stock Data Explorer")
         st.write("**CS 1301 — Team 15, Section D**")
         st.write("Team Members: **Kaiya Evans** & **Jenna Tran**")
