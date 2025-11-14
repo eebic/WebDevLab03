@@ -18,7 +18,7 @@ with st.container():
 
     with right:
         st.markdown(
-            "<h1 style='color:#FF0000;'>MONEY MOVES</h1>",
+            "<h1 style='color:#00A36C;'>MONEY MOVES</h1>",
             unsafe_allow_html=True
         )
         st.subheader("Stock Data Explorer")
