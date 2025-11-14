@@ -8,6 +8,7 @@ st.title("📈 Stock Market Dashboard")
 st.write(
     """
 This dashboard shows real stock market data using the **Alpha Vantage API**.  
+
 Enter a stock ticker and choose how many recent 60-minute candlesticks/points you want to see.
 You can view either the stock’s price trend or its trading volume.
     """
