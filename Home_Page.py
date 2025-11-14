@@ -66,8 +66,7 @@ with st.container():
         st.markdown(
             """
             ### 3️⃣ Stock Analysis  
-            Analyzes historical performance metrics and trends to evaluate  
-            investment potential.
+            Analyzes historical performance metrics and trends to evaluate investment potential.
             
             ### 4️⃣ Personal Stock Advisory  
             Offers personalized insights and portfolio suggestions based  
