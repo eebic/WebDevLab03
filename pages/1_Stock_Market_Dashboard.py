@@ -15,53 +15,63 @@ You can view either the stock’s price trend or its trading volume.
 
 st.markdown("---")
 
-#User inputs
+# User inputs
 symbol = st.text_input("Enter a stock symbol (ex. AAPL, TSLA, MSFT)", "AAPL").upper()
-num_points = st.slider("Number of recent 60-minute points", min_value = 10, max_value = 80, value = 24, help = "Each point represents one hour of trading data.")
+num_points = st.slider(
+    "Number of recent 60-minute points",
+    min_value=10,
+    max_value=80,
+    value=24,
+    help="Each point represents one hour of trading data."
+)
 
 api_key = "2GLDYP292HNQFQUP"
 function = "TIME_SERIES_INTRADAY"
 interval = "60min"
-    
-url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}"
-response = requests.get(url)
-data = response.json()
-#Note: .query? helps tell the API exactly what data you want
-# separate each parameter with &. Each parameter will have a key and a value
 
-#3 required parameters for Stock Market API:
-    #function(type of data,TIME_SEIRES_INTRADAY)
-    #symbol
-    #interval
+# addition: Only fetchs data when the button is clicked
+if st.button("Load data"):
+    url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}"
+    response = requests.get(url)
+    data = response.json()
+    # Note: .query? helps tell the API exactly what data you want
+    # separate each parameter with &. Each parameter will have a key and a value
 
-if "Time Series (60min)" in data:
-    ts = data["Time Series (60min)"]
-    df = pd.DataFrame(ts).T
-    df.columns = ["open", "high", "low", "close", "volume"]
-    df = df.astype(float)
-    df.index = pd.to_datetime(df.index)
-    df = df.sort_index().tail(num_points)
+    # 3 required parameters for Stock Market API:
+    # function(type of data,TIME_SERIES_INTRADAY)
+    # symbol
+    # interval
 
-    #Line chart
-    line = (
-        alt.Chart(df.reset_index())
-        .mark_line(color="black")
-        .encode(
-            x=alt.X("index:T", title="Time"),
-            y=alt.Y("close:Q", title="Closing Price ($)"),
-            tooltip=["index:T", "open", "high", "low", "close"] 
-        #when you hover over a  point on the graph, it'll show open, high, low, close of the candlestick
+    if "Time Series (60min)" in data:
+        ts = data["Time Series (60min)"]
+        df = pd.DataFrame(ts).T
+        df.columns = ["open", "high", "low", "close", "volume"]
+        df = df.astype(float)
+        df.index = pd.to_datetime(df.index)
+        df = df.sort_index().tail(num_points)
+
+        # Line chart
+        line = (
+            alt.Chart(df.reset_index())
+            .mark_line(color="black")
+            .encode(
+                x=alt.X("index:T", title="Time"),
+                y=alt.Y("close:Q", title="Closing Price ($)"),
+                tooltip=["index:T", "open", "high", "low", "close"]
+                # when you hover over a point on the graph, it'll show open, high, low, close of the candlestick
+            )
+            .properties(height=400, title=f"{symbol} Price Action (Last {num_points} Candlesticks)")
+            .interactive()
         )
-        .properties(height=400, title=f"{symbol} Price Action (Last {num_points} Candlesticks)")
-        .interactive()
-    )
 
-    st.altair_chart(line, use_container_width=True)
+        st.altair_chart(line, use_container_width=True)
 
-    #Displays data
-    with st.expander("View Data"):
-        st.dataframe(df)
+        # Displays data
+        with st.expander("View Data"):
+            st.dataframe(df)
 
+    else:
+        st.error("⚠️ Could not fetch data. Try again in a minute or check your API key (rate limit = 5 calls/min).")
+        # Our API is very slow, so this shows up kinda frequently. Sorry lol
 else:
-    st.error("⚠️ Could not fetch data. Try again in a minute or check your API key (rate limit = 5 calls/min).")
-    # Our API is very slow, so this shows up kinda frequently. Sorry lol
+    st.info("Enter a symbol and choose how many points to show, then click **Load data**.")
