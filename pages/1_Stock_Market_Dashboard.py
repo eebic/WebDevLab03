@@ -29,8 +29,13 @@ api_key = "2GLDYP292HNQFQUP"
 function = "TIME_SERIES_INTRADAY"
 interval = "60min"
 
-# addition: Only fetchs data when the button is clicked
-if st.button("Load data"):
+# button-only fetch to not overwork the API and cause issues/run errors
+clicked = st.button("Load data")
+
+# ppl keep forgetting to do this
+st.caption("🔄 After changing the inputs above, click **Load data** again to refresh the chart.")
+
+if clicked:
     url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}"
     response = requests.get(url)
     data = response.json()
@@ -44,13 +49,15 @@ if st.button("Load data"):
 
     if "Time Series (60min)" in data:
         ts = data["Time Series (60min)"]
+
+        # builds dataFrame
         df = pd.DataFrame(ts).T
         df.columns = ["open", "high", "low", "close", "volume"]
         df = df.astype(float)
         df.index = pd.to_datetime(df.index)
         df = df.sort_index().tail(num_points)
 
-        # Line chart
+        # line chart
         line = (
             alt.Chart(df.reset_index())
             .mark_line(color="black")
@@ -58,7 +65,7 @@ if st.button("Load data"):
                 x=alt.X("index:T", title="Time"),
                 y=alt.Y("close:Q", title="Closing Price ($)"),
                 tooltip=["index:T", "open", "high", "low", "close"]
-                # when you hover over a point on the graph, it'll show open, high, low, close of the candlestick
+                # when you hover over a point, it'll show open, high, low, close. pretty cool stuff
             )
             .properties(height=400, title=f"{symbol} Price Action (Last {num_points} Candlesticks)")
             .interactive()
@@ -66,12 +73,13 @@ if st.button("Load data"):
 
         st.altair_chart(line, use_container_width=True)
 
-        # Displays data
+        #shows DataFrame
         with st.expander("View Data"):
             st.dataframe(df)
 
     else:
         st.error("⚠️ Could not fetch data. Try again in a minute or check your API key (rate limit = 5 calls/min).")
-        # Our API is very slow, so this shows up kinda frequently. Sorry lol
+        # our API is very slow, so this shows up kinda frequently. Sorry lol
+
 else:
-    st.info("Enter a symbol and choose how many points to show, then click **Load data**.")
+    st.info("Enter a symbol and click **Load data** to fetch stock market data.")
