@@ -56,17 +56,17 @@ with st.container():
             ### 1️⃣ Home Page  
             Introduces the project, its purpose, and how to navigate the app.
             
-            ### 2️⃣ Stock Market Dashboard  
-            Displays real-time market data and interactive visualizations  
-            of selected stocks.
+            ### 3️⃣ Stock Analysis  
+            Analyzes historical performance metrics and trends to evaluate investment potential.
             """
         )
 
     with col2:
         st.markdown(
             """
-            ### 3️⃣ Stock Analysis  
-            Analyzes historical performance metrics and trends to evaluate investment potential.
+            ### 2️⃣ Stock Market Dashboard  
+            Displays real-time market data and interactive visualizations  
+            of selected stocks.
             
             ### 4️⃣ Personal Stock Advisory  
             Offers personalized insights and portfolio suggestions based  
