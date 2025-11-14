@@ -26,7 +26,7 @@ st.markdown("---")
 
 # introduction section
 with st.container():
-    st.subheader("Welcome! 👋")
+    st.markdown("<h3><u>Welcome! 👋</u></h3>", unsafe_allow_html=True)
     st.write(
         """
         Welcome to our Streamlit Web Development Lab03 app!  
@@ -39,7 +39,7 @@ st.markdown("")
 
 # overview of pages section
 with st.container():
-    st.subheader("App Pages Overview")
+    st.markdown("<h3><u>App Pages Overview</u></h3>", unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
@@ -67,4 +67,4 @@ with st.container():
             """
         )
 
-st.markmarkdown = ("") 
+st.markmarkdown = ("")
