@@ -3,11 +3,11 @@
 
 import streamlit as st
 
-# st.set_page_config(
-#     page_title="MONEY MOVES: Stock Data Explorer",
-#     page_icon="💸",
-#     layout="wide" 
-# )
+st.set_page_config(
+    page_title="MONEY MOVES: Stock Data Explorer",
+    page_icon="💸",
+    layout="wide" 
+)
 
 # header section
 with st.container():
