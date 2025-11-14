@@ -11,18 +11,17 @@ st.set_page_config(
 
 # header section
 with st.container():
-    col1, col2 = st.columns([1, 1])
+    left_pad, left, middle_pad, right, right_pad = st.columns([0.3, 1, 0.6, 1, 0.3])
 
-    with col1:
+    with left:
         st.image("Images/intro_pic.jpg", use_container_width=True)
 
-    with col2:
-        st.write("")
+    with right:
         st.title("Money Moves")
         st.subheader("Stock Data Explorer")
         st.write("**CS 1301 — Team 15, Section D**")
         st.write("Team Members: **Kaiya Evans** & **Jenna Tran**")
-        
+
 st.markdown("---")
 
 # introduction section
