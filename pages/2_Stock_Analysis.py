@@ -7,3 +7,4 @@ import pandas as pd
 import google.generativeai as genai
 import datetime as dt
 
+gemini_key = st.secrets["GEMINI_API_KEY"]
