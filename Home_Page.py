@@ -60,7 +60,7 @@ with st.container():
             Introduces the project, its purpose, and how to navigate the app.
             
             ### 3️⃣ Stock Analysis  
-            Analyzes historical performance metrics and trends to evaluate investment potential.
+            Analyzes ticker price action and trends to identify Smart Money Concepts' patterns.
             """
         )
 
