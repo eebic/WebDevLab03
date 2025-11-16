@@ -13,8 +13,8 @@ import google.generativeai as genai
 #grabs api keys from "Secrets" in streamlit
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-#older model version
-gemini_model = genai.GenerativeModel("models/gemini-pro")
+#gemini model version
+gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_INTRADAY"
@@ -97,7 +97,7 @@ Write a {style} report. Do NOT invent extra numbers.
 
 
 # page interface
-st.title("📊 Smart Money Concepts — AI Stock Analysis (Phase 3)")
+st.title("📊 Smart Money Concepts — AI Stock Analysis")
 st.write(
     """
 This page uses **Google Gemini** and **Alpha Vantage** data  
