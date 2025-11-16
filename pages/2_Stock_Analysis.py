@@ -10,7 +10,7 @@ import google.generativeai as genai
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 #3rd model of gemini to try lol
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_INTRADAY"
