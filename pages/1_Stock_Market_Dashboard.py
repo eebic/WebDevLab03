@@ -26,7 +26,7 @@ num_points = st.slider(
     help="Each point represents one hour of trading data."
 )
 
-api_key = "2GLDYP292HNQFQUP"
+api_key = st.secrets["ALPHA_VANTAGE_KEY"]
 function = "TIME_SERIES_INTRADAY"
 interval = "60min"
 
