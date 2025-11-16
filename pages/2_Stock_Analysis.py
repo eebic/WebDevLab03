@@ -1,4 +1,5 @@
 # Gemini API key: AIzaSyAESi3Zed0GIx4IgSzrynI5zTdxrDRWsiE
+# put in "Secrets" of streamlit page for webdevlab03-team15
 
 import streamlit as st
 import requests
