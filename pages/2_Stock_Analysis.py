@@ -5,23 +5,22 @@ import requests
 import pandas as pd
 import google.generativeai as genai
 
-import streamlit as st
-import requests
-import pandas as pd
-import google.generativeai as genai
-
-#grabs api keys from "Secrets" in streamlit
+# ----------------------------------------
+# Configure Gemini (v1beta compatible)
+# ----------------------------------------
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-#gemini model version
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+# ✔ Absolutely required: ONLY model available in v1beta
+gemini_model = genai.GenerativeModel("models/gemini-pro")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_INTRADAY"
 INTERVAL = "60min"
 
 
-#gets stock data from alpha vantage
+# ----------------------------------------
+# Fetch Alpha Vantage Data
+# ----------------------------------------
 def fetch_stock_data(symbol: str, num_points: int):
     url = (
         f"https://www.alphavantage.co/query?"
@@ -30,136 +29,104 @@ def fetch_stock_data(symbol: str, num_points: int):
     response = requests.get(url)
     data = response.json()
 
-    ts_key = "Time Series (60min)"
-    if ts_key not in data:
+    if "Time Series (60min)" not in data:
         return None
 
-    ts = data[ts_key]
+    ts = data["Time Series (60min)"]
     df = pd.DataFrame(ts).T
     df.columns = ["open", "high", "low", "close", "volume"]
     df = df.astype(float)
     df.index = pd.to_datetime(df.index)
-    df = df.sort_index().tail(num_points)
-    return df
+    return df.sort_index().tail(num_points)
 
-#creates basis for gemini prompt ask
-def summarize(df, num_points):
+
+# ----------------------------------------
+# Summaries for Gemini
+# ----------------------------------------
+def summarize(df, n):
     start = df["close"].iloc[0]
     end = df["close"].iloc[-1]
-    change = round(end - start, 2)
-    pct = round((change / start) * 100, 2)
-    high = df["high"].max()
-    low = df["low"].min()
+    chg = round(end - start, 2)
+    pct = round((chg / start) * 100, 2)
+    hi = df["high"].max()
+    lo = df["low"].min()
     vol = int(df["volume"].mean())
 
     return {
-        "num_points": num_points,
+        "n": n,
         "start": start,
         "end": end,
-        "change": change,
+        "chg": chg,
         "pct": pct,
-        "high": high,
-        "low": low,
+        "hi": hi,
+        "lo": lo,
         "vol": vol,
     }
 
 
-# smart money concepts analysis from gemini
-def generate_smc_report(symbol: str, summary: dict, style: str):
+# ----------------------------------------
+# Gemini SMC Analyzer
+# ----------------------------------------
+def generate_smc(symbol: str, summary: dict, style: str):
     prompt = f"""
 You are an expert Smart Money Concepts (SMC) trader.
 
-Analyze current price action for {symbol} using ONLY this data:
+Analyze recent price action for {symbol} using ONLY the data below:
 
-Recent {summary['num_points']} intraday 60-minute candles:
-• Starting close: ${summary['start']:.2f}
-• Ending close: ${summary['end']:.2f}
-• Net change: ${summary['change']:.2f}
-• Percent change: {summary['pct']:.2f}%
-• High of range: ${summary['high']:.2f}
-• Low of range: ${summary['low']:.2f}
+• Last {summary['n']} 60-minute candles  
+• Starting close: ${summary['start']:.2f}  
+• Ending close: ${summary['end']:.2f}  
+• Change: ${summary['chg']:.2f} ({summary['pct']:.2f}%)  
+• High: ${summary['hi']:.2f}  
+• Low: ${summary['lo']:.2f}  
 • Average volume: {summary['vol']}
 
-In your analysis, discuss SMC concepts such as:
-- Market Structure (HH/HL/LH/LL)
-- Trend bias (bullish / bearish / ranging)
-- Liquidity grabs / stop hunts
-- Institutional manipulation (Smart Money)
-- Premium vs Discount zones
-- Accumulation or Distribution
-- Price delivery expectation
+Discuss SMC ideas like:
+- Market Structure (HH/HL vs LH/LL)
+- Liquidity grabs
+- Premium/discount zones
+- Accumulation or distribution
+- Smart Money manipulation
+- Bias (bullish/bearish/range)
 
-Write a {style} report. Do NOT invent extra numbers.
+Write a {style} SMC report.
 """
 
     response = gemini_model.generate_content(prompt)
     return response.text
 
 
-# page interface
-st.title("📊 Smart Money Concepts — AI Stock Analysis")
-st.write(
-    """
-This page uses **Google Gemini** and **Alpha Vantage** data  
-to generate a Smart Money Concepts (SMC) breakdown for any stock.
-"""
-)
+# ----------------------------------------
+# Streamlit UI
+# ----------------------------------------
+st.title("📊 Smart Money Concepts — AI Stock Analysis (Phase 3)")
 
-# inputs
 symbol = st.text_input("Stock Symbol", "AAPL").upper()
-
-num_points = st.slider(
-    "Number of recent 60-minute candles to analyze:",
-    10, 80, 24
-)
-
+num_points = st.slider("Number of recent candles", 10, 80, 24)
 style = st.selectbox(
-    "Choose SMC Report Style",
-    [
-        "Beginner-friendly explanation",
-        "Trader-style breakdown",
-        "Concise professional summary",
-    ]
+    "Choose analysis style",
+    ["Beginner-friendly explanation", "Trader breakdown", "Professional summary"],
 )
+show_data = st.checkbox("Show OHLC Data", True)
 
-show_data = st.checkbox("Show OHLC data", value=True)
+if st.button("Generate Analysis"):
+    df = fetch_stock_data(symbol, num_points)
 
-st.markdown("---")
+    if df is None:
+        st.error("Error fetching data. Check symbol or API rate limit.")
+    else:
+        summary = summarize(df, num_points)
 
-# control button to not overload the APIs
-if st.button("🔍 Generate SMC Analysis"):
-    with st.spinner("Generating Smart Money Concepts analysis..."):
-        df = fetch_stock_data(symbol, num_points)
+        if show_data:
+            st.subheader("📈 OHLC Data")
+            st.dataframe(df)
 
-        if df is None:
-            st.error("⚠️ Error fetching data. Check symbol or API rate limit.")
-        else:
-            summary = summarize(df, num_points)
+        st.subheader("📌 Price Summary")
+        st.write(summary)
 
-            if show_data:
-                st.subheader("📈 Recent OHLC Data")
-                st.dataframe(df)
-
-            # number summary
-            st.subheader("📌 Price Action Summary")
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                st.metric("Start Close", f"${summary['start']:.2f}")
-                st.metric("End Close", f"${summary['end']:.2f}")
-            with col2:
-                st.metric("Change", f"${summary['change']:.2f}")
-                st.metric("Percent Change", f"{summary['pct']:.2f}%")
-            with col3:
-                st.metric("High", f"${summary['high']:.2f}")
-                st.metric("Low", f"${summary['low']:.2f}")
-                st.metric("Avg Volume", f"{summary['vol']:,}")
-
-            # gemini output
-            try:
-                st.subheader("🤖 Gemini SMC Report")
-                report = generate_smc_report(symbol, summary, style)
-                st.write(report)
-            except Exception as e:
-                st.error("Gemini API Error — try again.")
-                st.caption(str(e))
-
+        try:
+            st.subheader("🤖 Gemini SMC Report")
+            st.write(generate_smc(symbol, summary, style))
+        except Exception as e:
+            st.error("Gemini API Error — try again.")
+            st.caption(str(e))
