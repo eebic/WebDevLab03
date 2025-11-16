@@ -1,5 +1,4 @@
 # https://webdevlab03-team15.streamlit.app/
-# API Key (Alpha Vantage): 2GLDYP292HNQFQUP
 
 import streamlit as st
 
