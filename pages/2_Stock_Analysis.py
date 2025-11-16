@@ -1,17 +1,16 @@
-# put in "Secrets" of streamlit page for webdevlab03-team15
-
 import streamlit as st
 import requests
 import pandas as pd
 import google.generativeai as genai
 
 # ----------------------------------------
-# Configure Gemini (v1beta compatible)
+# Configure Gemini with your API key
 # ----------------------------------------
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# ✔ Absolutely required: ONLY model available in v1beta
-gemini_model = genai.GenerativeModel("models/gemini-pro")
+# ✅ Use a model that actually exists in your list_models()
+# (you confirmed "models/gemini-flash-latest" is available)
+gemini_model = genai.GenerativeModel("models/gemini-flash-latest")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_INTRADAY"
@@ -128,5 +127,5 @@ if st.button("Generate Analysis"):
             st.subheader("🤖 Gemini SMC Report")
             st.write(generate_smc(symbol, summary, style))
         except Exception as e:
-            st.error("Gemini API Error — try again.")
+            st.error("Gemini API Error — check the model name and try again.")
             st.caption(str(e))
