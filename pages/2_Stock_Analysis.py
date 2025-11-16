@@ -3,9 +3,7 @@ import requests
 import pandas as pd
 import google.generativeai as genai
 
-# ----------------------------------------
-# Configure Gemini with your API key
-# ----------------------------------------
+#grab api keys from "Secrets" in streamlit
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # Use one of the models that appears in your list_models()
@@ -16,9 +14,7 @@ FUNCTION = "TIME_SERIES_INTRADAY"
 INTERVAL = "60min"
 
 
-# ----------------------------------------
-# Fetch Alpha Vantage Data
-# ----------------------------------------
+# get stock data from alpha vantage
 def fetch_stock_data(symbol: str, num_points: int):
     url = (
         f"https://www.alphavantage.co/query?"
@@ -38,9 +34,7 @@ def fetch_stock_data(symbol: str, num_points: int):
     return df.sort_index().tail(num_points)
 
 
-# ----------------------------------------
-# Build Summary Dictionary
-# ----------------------------------------
+# creates basis for gemini prompt
 def summarize(df, n):
     start = df["close"].iloc[0]
     end = df["close"].iloc[-1]
@@ -62,9 +56,7 @@ def summarize(df, n):
     }
 
 
-# ----------------------------------------
-# Gemini SMC Analyzer
-# ----------------------------------------
+#smart money concept analysis by gemini
 def generate_smc(symbol: str, summary: dict, style: str):
     prompt = f"""
 You are an expert Smart Money Concepts (SMC) trader.
@@ -94,9 +86,7 @@ Write a {style} SMC report.
     return response.text
 
 
-# ----------------------------------------
-# Streamlit UI
-# ----------------------------------------
+# page interface
 st.title("📊 Smart Money Concepts — AI Stock Analysis (Phase 3)")
 
 symbol = st.text_input("Stock Symbol", "AAPL").upper()
@@ -115,9 +105,7 @@ if st.button("Generate Analysis"):
     else:
         summary = summarize(df, num_points)
 
-        # --------------------------------------------------------------
-        # ⭐ CLEAN PRICE SUMMARY (OPTION A — METRIC CARDS)
-        # --------------------------------------------------------------
+        # price summary
         st.subheader("📌 Price Summary")
 
         col1, col2, col3 = st.columns(3)
@@ -135,16 +123,12 @@ if st.button("Generate Analysis"):
             st.metric("Low", f"${summary['lo']:.2f}")
             st.metric("Avg Volume", f"{summary['vol']:,}")
 
-        # --------------------------------------------------------------
-        # Optional: Show raw OHLC data
-        # --------------------------------------------------------------
+        # shows open, high, low, close, data
         if show_data:
             st.subheader("📈 Recent OHLC Data")
             st.dataframe(df)
 
-        # --------------------------------------------------------------
-        # Gemini Output
-        # --------------------------------------------------------------
+        #gemini output
         try:
             st.subheader("🤖 Gemini SMC Report")
             smc_report = generate_smc(symbol, summary, style)
