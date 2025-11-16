@@ -6,23 +6,18 @@ import requests
 import pandas as pd
 import google.generativeai as genai
 
-import streamlit as st
-import requests
-import pandas as pd
-import google.generativeai as genai
-
-#grabs api keys from "Secrets" in streamlit
+#grab api keys from "Secrets" in streamlit
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-#updated gemini mode, had errors with og one
-gemini_model = genai.GenerativeModel("models/gemini-1.5-flash")
+#3rd model of gemini to try lol
+gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_INTRADAY"
 INTERVAL = "60min"
 
 
-#gets stock data from alpha vantage
+#grabs stock data from alpha vantage
 def fetch_stock_data(symbol: str, num_points: int):
     url = (
         f"https://www.alphavantage.co/query?"
@@ -44,7 +39,7 @@ def fetch_stock_data(symbol: str, num_points: int):
     return df
 
 
-#creates a number basis for gemini to use
+#creates basis for gemini prompt
 def summarize(df, num_points):
     start = df["close"].iloc[0]
     end = df["close"].iloc[-1]
@@ -66,19 +61,19 @@ def summarize(df, num_points):
     }
 
 
-# gemini smart money concepts analysis
+#gemini smart money concept analysis
 def generate_smc_report(symbol: str, summary: dict, style: str):
     prompt = f"""
 You are an expert Smart Money Concepts (SMC) price action trader.
 
-Analyze the recent intraday structure for the stock {symbol} using ONLY the numeric data below.
-Connect the price changes to SMC ideas such as:
-- Market Structure (HH/HL or LH/LL)
-- Liquidity grabs / stop hunts
+Analyze the recent intraday structure for the stock {symbol} using ONLY the data below.
+Connect the price behavior to SMC ideas such as:
+- Market Structure (higher highs / lower lows)
+- Liquidity hunts & stop runs
 - Premium vs Discount zones
-- Accumulation or Distribution behavior
-- Trend bias (bullish / bearish / ranging)
+- Accumulation vs Distribution
 - Institutional activity (Smart Money)
+- Trend bias (bullish / bearish / ranging)
 
 Recent {summary['num_points']} intraday 60-minute candles:
 - Starting close: ${summary['start']:.2f}
@@ -89,9 +84,9 @@ Recent {summary['num_points']} intraday 60-minute candles:
 - Low of range: ${summary['low']:.2f}
 - Average volume: {summary['vol']}
 
-Write a {style} SMC price action report.
-Do NOT invent additional numeric levels.
-Base your explanation solely on the data provided.
+Write a {style} SMC report.
+Do NOT invent any extra numeric values.
+Only use the data provided.
 """
 
     response = gemini_model.generate_content(prompt)
@@ -103,7 +98,7 @@ st.title("📊 Smart Money Concepts — AI Stock Analysis (Phase 3)")
 st.write(
     """
 This tool uses **Google Gemini** + real **Alpha Vantage intraday data**  
-to generate a Smart Money Concepts (SMC) analysis of any ticker.
+to generate a Smart Money Concepts (SMC) analysis of a chosen stock.
 """
 )
 
@@ -128,7 +123,7 @@ show_data = st.checkbox("Show OHLC data", value=True)
 
 st.markdown("---")
 
-# control button to not overload the apis
+# control button so it doesnt overwork the APIs
 if st.button("🔍 Generate SMC Analysis"):
     with st.spinner("Analyzing price action using Smart Money Concepts..."):
         df = fetch_stock_data(symbol, num_points)
