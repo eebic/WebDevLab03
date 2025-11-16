@@ -8,8 +8,7 @@ import google.generativeai as genai
 # ----------------------------------------
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# ✅ Use a model that actually exists in your list_models()
-# (you confirmed "models/gemini-flash-latest" is available)
+# Use one of the models that appears in your list_models()
 gemini_model = genai.GenerativeModel("models/gemini-flash-latest")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
@@ -40,7 +39,7 @@ def fetch_stock_data(symbol: str, num_points: int):
 
 
 # ----------------------------------------
-# Summaries for Gemini
+# Build Summary Dictionary
 # ----------------------------------------
 def summarize(df, n):
     start = df["close"].iloc[0]
@@ -116,16 +115,40 @@ if st.button("Generate Analysis"):
     else:
         summary = summarize(df, num_points)
 
+        # --------------------------------------------------------------
+        # ⭐ CLEAN PRICE SUMMARY (OPTION A — METRIC CARDS)
+        # --------------------------------------------------------------
+        st.subheader("📌 Price Summary")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Start Close", f"${summary['start']:.2f}")
+            st.metric("End Close", f"${summary['end']:.2f}")
+
+        with col2:
+            st.metric("Change ($)", f"${summary['chg']:.2f}")
+            st.metric("Percent Change", f"{summary['pct']:.2f}%")
+
+        with col3:
+            st.metric("High", f"${summary['hi']:.2f}")
+            st.metric("Low", f"${summary['lo']:.2f}")
+            st.metric("Avg Volume", f"{summary['vol']:,}")
+
+        # --------------------------------------------------------------
+        # Optional: Show raw OHLC data
+        # --------------------------------------------------------------
         if show_data:
-            st.subheader("📈 OHLC Data")
+            st.subheader("📈 Recent OHLC Data")
             st.dataframe(df)
 
-        st.subheader("📌 Price Summary")
-        st.write(summary)
-
+        # --------------------------------------------------------------
+        # Gemini Output
+        # --------------------------------------------------------------
         try:
             st.subheader("🤖 Gemini SMC Report")
-            st.write(generate_smc(symbol, summary, style))
+            smc_report = generate_smc(symbol, summary, style)
+            st.write(smc_report)
         except Exception as e:
-            st.error("Gemini API Error — check the model name and try again.")
+            st.error("Gemini API Error — check model name or try again.")
             st.caption(str(e))
