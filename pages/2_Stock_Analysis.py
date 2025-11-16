@@ -92,7 +92,7 @@ Instructions:
     return response.text
 
 #page interface
-st.title("💸 Money Moves: Smart Money Concepts (Phase 3)")
+st.title("💸 Money Moves: Smart Money Concepts")
 st.write(
     """
 This page uses **Google Gemini** and **Alpha Vantage** data to analyze ticker price action  
