@@ -119,13 +119,13 @@ real market data from **Alpha Vantage** and **Google Gemini**.
 # --------------------------------
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-    
-saved = storage.get("saved_conversations")
 
-if saved is None:
-    st.session_state.saved_conversations = {}
-else:
-    st.session_state.saved_conversations = saved
+if "saved_conversations" not in st.session_state:
+    saved = storage.get("saved_conversations")
+    if saved is None:
+        st.session_state.saved_conversations = {}
+    else:
+        st.session_state.saved_conversations = saved
 # --------------------------------
 # ADVISOR SETTINGS
 # --------------------------------
