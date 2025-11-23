@@ -103,7 +103,93 @@ def gemini_advice(symbol, summary, risk_profile, horizon, question, chat_history
     return response.text
 
 
-# page UI
+# # page UI
+# st.title("💬 Money Moves: Personal Stock Advisor")
+
+# st.write(
+#     """
+# Chat with an AI **stock education assistant** powered by  
+# real market data from **Alpha Vantage** and **Google Gemini**.
+
+# ⚠️ This tool is for learning only — it does **not** provide personalized financial advice.
+# """
+# )
+
+# # stock advisor settings
+# st.markdown("### 📝 Advisor Settings")
+
+# symbol = st.text_input("Stock symbol", "AAPL").upper()
+
+# risk_profile = st.selectbox(
+#     "Your risk profile:",
+#     ["Conservative", "Moderate", "Aggressive"],
+# )
+
+# horizon = st.selectbox(
+#     "Your time horizon:",
+#     ["Short-term (0–6 months)", "Medium-term (6–24 months)", "Long-term (2+ years)"],
+# )
+
+# days_window = st.slider(
+#     "How many recent trading days should the advisor consider?",
+#     min_value=10,
+#     max_value=120,
+#     value=30,
+# )
+
+# st.markdown("---")
+
+# # conversation history
+# if "chat_history" not in st.session_state:
+#     st.session_state.chat_history = []
+
+# st.subheader("🧠 Conversation")
+
+# if not st.session_state.chat_history:
+#     st.caption("Ask a question about your stock to begin!")
+# else:
+#     for msg in st.session_state.chat_history:
+#         if msg["role"] == "user":
+#             st.markdown(f"**You:** {msg['content']}")
+#         else:
+#             st.markdown(f"**Advisor:** {msg['content']}")
+
+# st.markdown("---")
+
+# # user input
+# user_msg = st.text_input("Ask your question:")
+# send_clicked = st.button("Send")
+
+# if send_clicked and user_msg.strip():
+#     st.session_state.chat_history.append({"role": "user", "content": user_msg})
+
+#     df = fetch_daily_data(symbol, days_window)
+
+#     if df is None:
+#         assistant_reply = (
+#             "I couldn't fetch data for that ticker. "
+#             "Try a different symbol or wait for Alpha Vantage to reset."
+#         )
+#         st.session_state.chat_history.append({"role": "assistant", "content": assistant_reply})
+#     else:
+#         summary = summarize_daily(df)
+
+#         try:
+#             reply = gemini_advice(
+#                 symbol=symbol,
+#                 summary=summary,
+#                 risk_profile=risk_profile,
+#                 horizon=horizon,
+#                 question=user_msg,
+#                 chat_history=st.session_state.chat_history,
+#             )
+#         except Exception as e:
+#             reply = (
+#                 "Hmm, I'm having trouble contacting the Gemini API right now. "
+#                 "Please try again in a moment."
+#             )
+#             st.error(f"Gemini error: {e}")
+
 st.title("💬 Money Moves: Personal Stock Advisor")
 
 st.write(
@@ -115,7 +201,18 @@ real market data from **Alpha Vantage** and **Google Gemini**.
 """
 )
 
-# stock advisor settings
+# --------------------------------
+# SESSION STATE INITIALIZATION
+# --------------------------------
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+if "saved_conversations" not in st.session_state:
+    st.session_state.saved_conversations = {}
+
+# --------------------------------
+# ADVISOR SETTINGS
+# --------------------------------
 st.markdown("### 📝 Advisor Settings")
 
 symbol = st.text_input("Stock symbol", "AAPL").upper()
@@ -139,9 +236,12 @@ days_window = st.slider(
 
 st.markdown("---")
 
+# --------------------------------
+# SIDEBAR: CHAT HISTORY
+# --------------------------------
 st.sidebar.subheader("💾 Chat History")
 
-# Show saved conversations
+# Load previous conversations
 if st.session_state.saved_conversations:
     selected_history = st.sidebar.selectbox(
         "Load a previous conversation:",
@@ -149,70 +249,18 @@ if st.session_state.saved_conversations:
     )
 
     if selected_history != "(None)":
-        st.session_state.messages = st.session_state.saved_conversations[selected_history]
+        st.session_state.chat_history = st.session_state.saved_conversations[selected_history].copy()
         st.sidebar.success(f"Loaded: {selected_history}")
 
 # Save current conversation
 save_name = st.sidebar.text_input("Name this conversation:")
 if st.sidebar.button("Save Conversation"):
     if save_name.strip():
-        st.session_state.saved_conversations[save_name] = st.session_state.messages.copy()
+        st.session_state.saved_conversations[save_name] = st.session_state.chat_history.copy()
         st.sidebar.success("Conversation saved!")
     else:
         st.sidebar.error("Please enter a name before saving.")
 
+#         st.session_state.chat_history.append({"role": "assistant", "content": reply})
 
-# conversation history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-st.subheader("🧠 Conversation")
-
-if not st.session_state.chat_history:
-    st.caption("Ask a question about your stock to begin!")
-else:
-    for msg in st.session_state.chat_history:
-        if msg["role"] == "user":
-            st.markdown(f"**You:** {msg['content']}")
-        else:
-            st.markdown(f"**Advisor:** {msg['content']}")
-
-st.markdown("---")
-
-# user input
-user_msg = st.text_input("Ask your question:")
-send_clicked = st.button("Send")
-
-if send_clicked and user_msg.strip():
-    st.session_state.chat_history.append({"role": "user", "content": user_msg})
-
-    df = fetch_daily_data(symbol, days_window)
-
-    if df is None:
-        assistant_reply = (
-            "I couldn't fetch data for that ticker. "
-            "Try a different symbol or wait for Alpha Vantage to reset."
-        )
-        st.session_state.chat_history.append({"role": "assistant", "content": assistant_reply})
-    else:
-        summary = summarize_daily(df)
-
-        try:
-            reply = gemini_advice(
-                symbol=symbol,
-                summary=summary,
-                risk_profile=risk_profile,
-                horizon=horizon,
-                question=user_msg,
-                chat_history=st.session_state.chat_history,
-            )
-        except Exception as e:
-            reply = (
-                "Hmm, I'm having trouble contacting the Gemini API right now. "
-                "Please try again in a moment."
-            )
-            st.error(f"Gemini error: {e}")
-
-        st.session_state.chat_history.append({"role": "assistant", "content": reply})
-
-    st.rerun()
+#     st.rerun()
