@@ -139,6 +139,29 @@ days_window = st.slider(
 
 st.markdown("---")
 
+st.sidebar.subheader("💾 Chat History")
+
+# Show saved conversations
+if st.session_state.saved_conversations:
+    selected_history = st.sidebar.selectbox(
+        "Load a previous conversation:",
+        ["(None)"] + list(st.session_state.saved_conversations.keys())
+    )
+
+    if selected_history != "(None)":
+        st.session_state.messages = st.session_state.saved_conversations[selected_history]
+        st.sidebar.success(f"Loaded: {selected_history}")
+
+# Save current conversation
+save_name = st.sidebar.text_input("Name this conversation:")
+if st.sidebar.button("Save Conversation"):
+    if save_name.strip():
+        st.session_state.saved_conversations[save_name] = st.session_state.messages.copy()
+        st.sidebar.success("Conversation saved!")
+    else:
+        st.sidebar.error("Please enter a name before saving.")
+
+
 # conversation history
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
