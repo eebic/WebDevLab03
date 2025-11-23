@@ -108,8 +108,7 @@ def gemini_advice(symbol, summary, risk_profile, horizon, question, chat_history
 
 # st.write(
 #     """
-# Chat with an AI **stock education assistant** powered by  
-# real market data from **Alpha Vantage** and **Google Gemini**.
+# Chat with an AI **stock education assistant** powered by real market data from **Alpha Vantage** and **Google Gemini**.
 
 # ⚠️ This tool is for learning only — it does **not** provide personalized financial advice.
 # """
