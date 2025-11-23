@@ -261,6 +261,61 @@ if st.sidebar.button("Save Conversation"):
     else:
         st.sidebar.error("Please enter a name before saving.")
 
+# --------------------------------
+# CONVERSATION DISPLAY
+# --------------------------------
+st.subheader("🧠 Conversation")
+
+if not st.session_state.chat_history:
+    st.caption("Ask a question about your stock to begin!")
+else:
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"**You:** {msg['content']}")
+        else:
+            st.markdown(f"**Advisor:** {msg['content']}")
+
+st.markdown("---")
+
+# --------------------------------
+# USER INPUT AREA
+# --------------------------------
+user_msg = st.text_input("Ask your question:")
+send_clicked = st.button("Send")
+
+if send_clicked and user_msg.strip():
+    st.session_state.chat_history.append({"role": "user", "content": user_msg})
+
+    df = fetch_daily_data(symbol, days_window)
+
+    if df is None:
+        assistant_reply = (
+            "I couldn't fetch data for that ticker. "
+            "Try a different symbol or wait for Alpha Vantage to reset."
+        )
+        st.session_state.chat_history.append({"role": "assistant", "content": assistant_reply})
+    else:
+        summary = summarize_daily(df)
+        try:
+            reply = gemini_advice(
+                symbol=symbol,
+                summary=summary,
+                risk_profile=risk_profile,
+                horizon=horizon,
+                question=user_msg,
+                chat_history=st.session_state.chat_history,
+            )
+        except Exception as e:
+            reply = (
+                "Hmm, I'm having trouble contacting the Gemini API right now. "
+                "Please try again in a moment."
+            )
+            st.error(f"Gemini error: {e}")
+
+        st.session_state.chat_history.append({"role": "assistant", "content": reply})
+
+    st.rerun()
+
 #         st.session_state.chat_history.append({"role": "assistant", "content": reply})
 
 #     st.rerun()
