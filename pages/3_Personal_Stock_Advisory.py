@@ -145,30 +145,35 @@ if "chat_history" not in st.session_state:
 
 st.subheader("🧠 Conversation & History")
 
-# split into two columns: left = full convo, right = question history
-col_conv, col_hist = st.columns([2, 1])
+# -------------------------------
+# CONVERSATION (MAIN AREA)
+# -------------------------------
+if not st.session_state.chat_history:
+    st.caption("Ask a question about your stock to begin!")
+else:
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"**You:** {msg['content']}")
+        else:
+            st.markdown(f"**Advisor:** {msg['content']}")
 
-with col_conv:
-    if not st.session_state.chat_history:
-        st.caption("Ask a question about your stock to begin!")
-    else:
-        for msg in st.session_state.chat_history:
-            if msg["role"] == "user":
-                st.markdown(f"**You:** {msg['content']}")
-            else:
-                st.markdown(f"**Advisor:** {msg['content']}")
+# -------------------------------
+# SIDEBAR QUESTION HISTORY
+# -------------------------------
+st.sidebar.markdown("### 📜 Question History")
 
-with col_hist:
-    st.markdown("#### 📜 Question History")
-    user_questions = [m["content"] for m in st.session_state.chat_history if m["role"] == "user"]
+user_questions = [
+    m["content"]
+    for m in st.session_state.chat_history
+    if m["role"] == "user"
+]
 
-    if not user_questions:
-        st.caption("No questions asked yet.")
-    else:
-        # show most recent first, truncate long ones
-        for i, q in enumerate(reversed(user_questions), start=1):
-            short_q = q if len(q) <= 80 else q[:77] + "..."
-            st.markdown(f"**{i}.** {short_q}")
+if not user_questions:
+    st.sidebar.caption("No questions yet.")
+else:
+    for i, q in enumerate(reversed(user_questions), start=1):
+        short_q = q if len(q) <= 80 else q[:77] + "..."
+        st.sidebar.markdown(f"**{i}.** {short_q}")
 
 st.markdown("---")
 
