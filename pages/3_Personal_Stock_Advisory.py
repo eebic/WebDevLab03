@@ -2,7 +2,6 @@ import streamlit as st
 import requests
 import pandas as pd
 import google.generativeai as genai
-from streamlit import experimental_storage as storage
 
 # gets API keys
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
@@ -103,6 +102,8 @@ def gemini_advice(symbol, summary, risk_profile, horizon, question, chat_history
     response = gemini_model.generate_content(prompt)
     return response.text
 
+
+# page UI
 st.title("💬 Money Moves: Personal Stock Advisor")
 
 st.write(
@@ -114,21 +115,7 @@ real market data from **Alpha Vantage** and **Google Gemini**.
 """
 )
 
-# --------------------------------
-# SESSION STATE INITIALIZATION
-# --------------------------------
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-
-if "saved_conversations" not in st.session_state:
-    saved = storage.get("saved_conversations")
-    if saved is None:
-        st.session_state.saved_conversations = {}
-    else:
-        st.session_state.saved_conversations = saved
-# --------------------------------
-# ADVISOR SETTINGS
-# --------------------------------
+# stock advisor settings
 st.markdown("### 📝 Advisor Settings")
 
 symbol = st.text_input("Stock symbol", "AAPL").upper()
@@ -152,51 +139,40 @@ days_window = st.slider(
 
 st.markdown("---")
 
-# --------------------------------
-# SIDEBAR: CHAT HISTORY
-# --------------------------------
-st.sidebar.subheader("💾 Chat History")
+# conversation history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-# Load previous conversations
-if st.session_state.saved_conversations:
-    selected_history = st.sidebar.selectbox(
-        "Load a previous conversation:",
-        ["(None)"] + list(st.session_state.saved_conversations.keys())
-    )
+st.subheader("🧠 Conversation & History")
 
-    if selected_history != "(None)":
-        st.session_state.chat_history = st.session_state.saved_conversations[selected_history].copy()
-        st.sidebar.success(f"Loaded: {selected_history}")
+# split into two columns: left = full convo, right = question history
+col_conv, col_hist = st.columns([2, 1])
 
-# Save current conversation
-save_name = st.sidebar.text_input("Name this conversation:")
-if st.sidebar.button("Save Conversation"):
-    if save_name.strip():
-        st.session_state.saved_conversations[save_name] = st.session_state.chat_history.copy()
-        storage.set("saved_conversations", st.session_state.saved_conversations)
-        st.sidebar.success("Conversation saved!")
+with col_conv:
+    if not st.session_state.chat_history:
+        st.caption("Ask a question about your stock to begin!")
     else:
-        st.sidebar.error("Please enter a name before saving.")
+        for msg in st.session_state.chat_history:
+            if msg["role"] == "user":
+                st.markdown(f"**You:** {msg['content']}")
+            else:
+                st.markdown(f"**Advisor:** {msg['content']}")
 
-# --------------------------------
-# CONVERSATION DISPLAY
-# --------------------------------
-st.subheader("🧠 Conversation")
+with col_hist:
+    st.markdown("#### 📜 Question History")
+    user_questions = [m["content"] for m in st.session_state.chat_history if m["role"] == "user"]
 
-if not st.session_state.chat_history:
-    st.caption("Ask a question about your stock to begin!")
-else:
-    for msg in st.session_state.chat_history:
-        if msg["role"] == "user":
-            st.markdown(f"**You:** {msg['content']}")
-        else:
-            st.markdown(f"**Advisor:** {msg['content']}")
+    if not user_questions:
+        st.caption("No questions asked yet.")
+    else:
+        # show most recent first, truncate long ones
+        for i, q in enumerate(reversed(user_questions), start=1):
+            short_q = q if len(q) <= 80 else q[:77] + "..."
+            st.markdown(f"**{i}.** {short_q}")
 
 st.markdown("---")
 
-# --------------------------------
-# USER INPUT AREA
-# --------------------------------
+# user input
 user_msg = st.text_input("Ask your question:")
 send_clicked = st.button("Send")
 
@@ -213,6 +189,7 @@ if send_clicked and user_msg.strip():
         st.session_state.chat_history.append({"role": "assistant", "content": assistant_reply})
     else:
         summary = summarize_daily(df)
+
         try:
             reply = gemini_advice(
                 symbol=symbol,
@@ -232,4 +209,3 @@ if send_clicked and user_msg.strip():
         st.session_state.chat_history.append({"role": "assistant", "content": reply})
 
     st.rerun()
-
