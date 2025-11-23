@@ -167,10 +167,10 @@ user_questions = [
 if not user_questions:
     st.sidebar.caption("No questions yet.")
 else:
-    for i, q in enumerate(reversed(user_questions), start=1):
+    for i, q in enumerate(user_questions, start=1):
         short_q = q if len(q) <= 80 else q[:77] + "..."
         st.sidebar.markdown(f"**{i}.** {short_q}")
-
+        
 st.markdown("---")
 
 # user input
