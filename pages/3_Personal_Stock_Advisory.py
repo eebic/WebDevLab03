@@ -145,9 +145,7 @@ if "chat_history" not in st.session_state:
 
 st.subheader("🧠 Conversation & History")
 
-# -------------------------------
-# CONVERSATION (MAIN AREA)
-# -------------------------------
+# conversation main area
 if not st.session_state.chat_history:
     st.caption("Ask a question about your stock to begin!")
 else:
@@ -157,9 +155,7 @@ else:
         else:
             st.markdown(f"**Advisor:** {msg['content']}")
 
-# -------------------------------
-# SIDEBAR QUESTION HISTORY
-# -------------------------------
+# question history sidebar
 st.sidebar.markdown("### 📜 Question History")
 
 user_questions = [
