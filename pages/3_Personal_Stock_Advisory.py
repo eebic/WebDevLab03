@@ -316,6 +316,3 @@ if send_clicked and user_msg.strip():
 
     st.rerun()
 
-#         st.session_state.chat_history.append({"role": "assistant", "content": reply})
-
-#     st.rerun()
