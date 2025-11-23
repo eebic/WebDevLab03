@@ -104,7 +104,7 @@ def gemini_advice(symbol, summary, risk_profile, horizon, question, chat_history
 
 
 # page UI
-st.title("💬 Money Moves: Personal Stock Advisor (Phase 4)")
+st.title("💬 Money Moves: Personal Stock Advisor")
 
 st.write(
     """
