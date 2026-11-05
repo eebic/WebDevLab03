@@ -5,7 +5,7 @@ from google import genai
 from google. genai import types
 
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-3.8-flash"
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_DAILY"
