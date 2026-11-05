@@ -86,7 +86,7 @@ if clicked:
 
     else:
         if "Information" in data:
-        st.error(f"Alpha Vantage: {data['Information']}")
+            st.error(f"Alpha Vantage: {data['Information']}")
         elif "Note" in data:
             st.error(f"Alpha Vantage: {data['Note']}")
         elif "Error Message" in data:
