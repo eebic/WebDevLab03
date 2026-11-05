@@ -181,7 +181,25 @@ if st.button("Generate Analysis"):
         else:
             st.warning("Gemini returned an empty response.")
     
+    
     except Exception as e:
-        st.error("Unable to generate Gemini analysis.")
-        st.exception(e)
+        error_code = getattr(e, "code", None)
+    
+        if error_code == 503 or "503" in str(e):
+            st.warning(
+                "Gemini is currently experiencing high demand. "
+                "Please try generating your analysis again later."
+            )
+        elif error_code == 429 or "429" in str(e):
+            st.warning(
+                "The AI analysis request limit has been reached. "
+                "Please try again later."
+            )
+        else:
+            st.error(
+                "Unable to generate the AI report right now. "
+                "Please try again later."
+            )
+            print(f"Gemini error: {type(e).__name__}: {e}")
+
     
