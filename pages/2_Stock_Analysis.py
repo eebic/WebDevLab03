@@ -163,20 +163,20 @@ if st.button("Generate Analysis"):
             st.dataframe(df)
 
         
-# Gemini AI report
-st.subheader("🤖 Gemini SMC Report")
-
-try:
-    with st.spinner("Gemini is analyzing your stock data..."):
-        smc_report = generate_smc(symbol, summary, style)
-
-    if smc_report and smc_report.strip():
-        st.success("Analysis generated successfully!")
-        st.markdown(smc_report)
-    else:
-        st.warning("Gemini returned an empty response.")
-
-except Exception as e:
-    st.error("Unable to generate Gemini analysis.")
-    st.exception(e)
-
+    # Gemini AI report
+    st.subheader("🤖 Gemini SMC Report")
+    
+    try:
+        with st.spinner("Gemini is analyzing your stock data..."):
+            smc_report = generate_smc(symbol, summary, style)
+    
+        if smc_report and smc_report.strip():
+            st.success("Analysis generated successfully!")
+            st.markdown(smc_report)
+        else:
+            st.warning("Gemini returned an empty response.")
+    
+    except Exception as e:
+        st.error("Unable to generate Gemini analysis.")
+        st.exception(e)
+    
