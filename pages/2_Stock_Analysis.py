@@ -114,10 +114,10 @@ Write a {style} SMC report.
 """
 
     response = gemini_model.generate_content(
-    prompt,
-    request_options={"timeout": 30}
-)
-return response.text
+        prompt,
+        request_options={"timeout": 30}
+    )
+    return response.text
 
 
 # page interface
