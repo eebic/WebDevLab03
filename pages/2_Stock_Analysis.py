@@ -1,13 +1,11 @@
 import streamlit as st
 import requests
 import pandas as pd
-import google.generativeai as genai
+from google import genai
+from google. genai import types
 
-#grab api keys from "Secrets" in streamlit
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
-# Use one of the models that appears in your list_models()
-gemini_model = genai.GenerativeModel("models/gemini-flash-latest")
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+GEMINI_MODEL = "gemini-2.5-flash"
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_DAILY"
@@ -113,11 +111,18 @@ Discuss SMC ideas like:
 Write a {style} SMC report.
 """
 
-    response = gemini_model.generate_content(
-        prompt,
-        request_options={"timeout": 30}
+    
+    response = client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.4,
+            max_output_tokens=1200,
+        ),
     )
+
     return response.text
+
 
 
 # page interface
