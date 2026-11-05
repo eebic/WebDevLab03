@@ -93,7 +93,7 @@ You are an expert Smart Money Concepts (SMC) trader.
 
 Analyze recent price action for {symbol} using ONLY the data below:
 
-• Last {summary['n']} 60-minute candles  
+• Last {summary['n']} daily candles  
 • Starting close: ${summary['start']:.2f}  
 • Ending close: ${summary['end']:.2f}  
 • Change: ${summary['chg']:.2f} ({summary['pct']:.2f}%)  
