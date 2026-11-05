@@ -4,7 +4,17 @@ import pandas as pd
 from google import genai
 from google. genai import types
 
-client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+
+client = genai.Client(
+    api_key=st.secrets["GEMINI_API_KEY"],
+    http_options=types.HttpOptions(
+        timeout=20000,
+        retry_options=types.HttpRetryOptions(
+            attempts=1
+        )
+    )
+)
+
 GEMINI_MODEL = "gemini-3.8-flash"
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
