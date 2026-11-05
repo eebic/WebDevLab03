@@ -16,22 +16,54 @@ INTERVAL = "60min"
 
 # get stock data from alpha vantage
 def fetch_stock_data(symbol: str, num_points: int):
-    url = (
-        f"https://www.alphavantage.co/query?"
-        f"function={FUNCTION}&symbol={symbol}&interval={INTERVAL}&apikey={ALPHA_API_KEY}"
-    )
-    response = requests.get(url)
-    data = response.json()
+    url = "https://www.alphavantage.co/query"
 
-    if "Time Series (60min)" not in data:
+    params = {
+        "function": FUNCTION,
+        "symbol": symbol,
+        "interval": INTERVAL,
+        "apikey": ALPHA_API_KEY,
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=20)
+        response.raise_for_status()
+        data = response.json()
+
+        if "Time Series (60min)" not in data:
+            if "Note" in data:
+                st.error(f"Alpha Vantage rate limit: {data['Note']}")
+            elif "Information" in data:
+                st.error(f"Alpha Vantage message: {data['Information']}")
+            elif "Error Message" in data:
+                st.error(f"Alpha Vantage error: {data['Error Message']}")
+            else:
+                st.error("Unexpected API response.")
+                st.write(data)
+            return None
+
+        ts = data["Time Series (60min)"]
+        df = pd.DataFrame.from_dict(ts, orient="index")
+        df = df.rename(columns={
+            "1. open": "open",
+            "2. high": "high",
+            "3. low": "low",
+            "4. close": "close",
+            "5. volume": "volume",
+        })
+
+        df = df[["open", "high", "low", "close", "volume"]]
+        df = df.astype(float)
+        df.index = pd.to_datetime(df.index)
+
+        return df.sort_index().tail(num_points)
+
+    except requests.RequestException as e:
+        st.error(f"Network/API request error: {e}")
         return None
-
-    ts = data["Time Series (60min)"]
-    df = pd.DataFrame(ts).T
-    df.columns = ["open", "high", "low", "close", "volume"]
-    df = df.astype(float)
-    df.index = pd.to_datetime(df.index)
-    return df.sort_index().tail(num_points)
+    except (ValueError, KeyError) as e:
+        st.error(f"Stock data processing error: {e}")
+        return None
 
 
 # creates basis for gemini prompt
