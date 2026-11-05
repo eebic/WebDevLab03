@@ -7,10 +7,9 @@ st.title("📈 Stock Market Dashboard")
 
 st.write(
     """
-This dashboard shows real stock market data using the **Alpha Vantage API**.  
-
-Enter a stock ticker and choose how many recent 60-minute candlesticks/points you want to see.
-You can view either the stock’s price trend or its trading volume.
+This interactive dashboard retrieves historical stock market data using the Alpha Vantage API.
+Enter a stock ticker and select the number of recent trading days to analyze. 
+Explore price trends and historical market data to better understand stock performance.
     """
 )
 
@@ -19,16 +18,15 @@ st.markdown("---")
 # User inputs
 symbol = st.text_input("Enter a stock symbol (ex. AAPL, TSLA, MSFT)", "AAPL").upper()
 num_points = st.slider(
-    "Number of recent 60-minute points",
+    "Number of recent daily points",
     min_value=10,
     max_value=80,
     value=24,
-    help="Each point represents one hour of trading data."
+    help="Each point represents one trading day of stock market data."
 )
 
 api_key = st.secrets["ALPHA_VANTAGE_KEY"]
-function = "TIME_SERIES_INTRADAY"
-interval = "60min"
+function = "TIME_SERIES_DAILY"
 
 # simple cache so we don't spam the API with the same request over and over
 @st.cache_data(ttl=300)  # cache for 5 minutes, 300 seconds
@@ -43,7 +41,7 @@ clicked = st.button("Load data")
 st.caption("🔄 After changing the inputs above, click **Load data** again to refresh the chart.")
 
 if clicked:
-    url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&interval={interval}&apikey={api_key}"
+    url = f"https://www.alphavantage.co/query?function={function}&symbol={symbol}&apikey={api_key}"
 
     # use cached fetch instead of calling the API directly every time
     data = fetch_data(url)
@@ -56,8 +54,8 @@ if clicked:
     # symbol
     # interval
 
-    if "Time Series (60min)" in data:
-        ts = data["Time Series (60min)"]
+    if "Time Series (Daily)" in data:
+        ts = data["Time Series (Daily)"]
 
         # builds dataFrame
         df = pd.DataFrame(ts).T
@@ -80,15 +78,21 @@ if clicked:
             .interactive()
         )
 
-        st.altair_chart(line, use_container_width=True)
+        st.altair_chart(line, width="stretch")
 
         #shows dataFrame
         with st.expander("View Data"):
             st.dataframe(df)
 
     else:
-        st.error("⚠️ Could not fetch data. Try again in a minute or check your API key (rate limit = 5 calls/min).")
-        # our API is very slow, so this shows up kinda frequently. Sorry lol
+        if "Information" in data:
+        st.error(f"Alpha Vantage: {data['Information']}")
+        elif "Note" in data:
+            st.error(f"Alpha Vantage: {data['Note']}")
+        elif "Error Message" in data:
+            st.error(f"Alpha Vantage: {data['Error Message']}")
+        else:
+            st.error("Unable to retrieve stock data. Please try again.")
 
 else:
     st.info("Enter a symbol and click **Load data** to fetch stock market data.")
