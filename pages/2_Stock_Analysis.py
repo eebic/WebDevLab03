@@ -11,7 +11,6 @@ gemini_model = genai.GenerativeModel("models/gemini-flash-latest")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
 FUNCTION = "TIME_SERIES_INTRADAY"
-INTERVAL = "60min"
 
 
 # get stock data from alpha vantage
@@ -21,7 +20,6 @@ def fetch_stock_data(symbol: str, num_points: int):
     params = {
         "function": FUNCTION,
         "symbol": symbol,
-        "interval": INTERVAL,
         "apikey": ALPHA_API_KEY,
     }
 
@@ -30,7 +28,7 @@ def fetch_stock_data(symbol: str, num_points: int):
         response.raise_for_status()
         data = response.json()
 
-        if "Time Series (60min)" not in data:
+        if "Time Series (Daily)" not in data:
             if "Note" in data:
                 st.error(f"Alpha Vantage rate limit: {data['Note']}")
             elif "Information" in data:
@@ -42,7 +40,7 @@ def fetch_stock_data(symbol: str, num_points: int):
                 st.write(data)
             return None
 
-        ts = data["Time Series (60min)"]
+        ts = data["Time Series (Daily)"]
         df = pd.DataFrame.from_dict(ts, orient="index")
         df = df.rename(columns={
             "1. open": "open",
