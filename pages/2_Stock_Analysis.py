@@ -10,10 +10,11 @@ genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 gemini_model = genai.GenerativeModel("models/gemini-flash-latest")
 
 ALPHA_API_KEY = st.secrets["ALPHA_VANTAGE_KEY"]
-FUNCTION = "TIME_SERIES_INTRADAY"
+FUNCTION = "TIME_SERIES_DAILY"
 
 
-# get stock data from alpha vantage
+# get stock data from alpha vantage; store successful stock data results for one hour
+@st.cache_data(ttl=3600)
 def fetch_stock_data(symbol: str, num_points: int):
     url = "https://www.alphavantage.co/query"
 
@@ -131,7 +132,7 @@ if st.button("Generate Analysis"):
     df = fetch_stock_data(symbol, num_points)
 
     if df is None:
-        st.error("Error fetching data. Check symbol or API rate limit.")
+        st.stop()
     else:
         summary = summarize(df, num_points)
 
