@@ -113,8 +113,11 @@ Discuss SMC ideas like:
 Write a {style} SMC report.
 """
 
-    response = gemini_model.generate_content(prompt)
-    return response.text
+    response = gemini_model.generate_content(
+    prompt,
+    request_options={"timeout": 30}
+)
+return response.text
 
 
 # page interface
@@ -159,11 +162,21 @@ if st.button("Generate Analysis"):
             st.subheader("📈 Recent OHLC Data")
             st.dataframe(df)
 
-        #gemini output
-        try:
-            st.subheader("🤖 Gemini SMC Report")
-            smc_report = generate_smc(symbol, summary, style)
-            st.write(smc_report)
-        except Exception as e:
-            st.error("Gemini API Error — check model name or try again.")
-            st.caption(str(e))
+        
+# Gemini AI report
+st.subheader("🤖 Gemini SMC Report")
+
+try:
+    with st.spinner("Gemini is analyzing your stock data..."):
+        smc_report = generate_smc(symbol, summary, style)
+
+    if smc_report and smc_report.strip():
+        st.success("Analysis generated successfully!")
+        st.markdown(smc_report)
+    else:
+        st.warning("Gemini returned an empty response.")
+
+except Exception as e:
+    st.error("Unable to generate Gemini analysis.")
+    st.exception(e)
+
