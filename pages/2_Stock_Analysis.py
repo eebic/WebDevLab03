@@ -206,10 +206,8 @@ if st.button("Generate Analysis"):
                 "Please try again later."
             )
         else:
-            st.error(
-                "Unable to generate the AI report right now. "
-                "Please try again later."
-            )
-            print(f"Gemini error: {type(e).__name__}: {e}")
+            st.error("Unable to generate the AI report.")
+            st.write(f"Error type: {type(e).__name__}")
+            st.write(f"Error details: {e}")
 
     
